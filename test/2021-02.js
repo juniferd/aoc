@@ -1,4 +1,4 @@
-const {readFile} = require('./utils.js');
+const {readFile} = require('../utils.js');
 
 async function getArea() {
   const instructions = await readFile('./input.txt', String, ' ');

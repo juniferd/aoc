@@ -1,4 +1,4 @@
-const {readFile, binaryToDecimal} = require('./utils.js');
+const {readFile, binaryToDecimal} = require('../utils.js');
 
 function getBitRate(nums) {
   const res = Array(nums[0].length).fill(0);
