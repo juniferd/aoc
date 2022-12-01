@@ -1,7 +1,7 @@
 const fs = require('fs')
 const readline = require('readline');
 
-async function readFile(inputFile='./input.txt', coerceType=Boolean, separator) {
+async function readFile(inputFile='./input.txt', coerceType=String, separator) {
   const fileStream = fs.createReadStream(inputFile);
   const rl = readline.createInterface({
     input: fileStream,
