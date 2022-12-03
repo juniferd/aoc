@@ -1,4 +1,4 @@
-const { readFile } = require('./utils.js')
+const { readFile } = require('../utils.js')
 
 const RPS_POINT = {
   'X': 1,

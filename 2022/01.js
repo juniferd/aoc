@@ -1,4 +1,4 @@
-const { readFile } = require('./utils.js')
+const { readFile } = require('../utils.js')
 
 async function mostCalories(file = './input.txt') {
   const calories = await readFile(file, String)
