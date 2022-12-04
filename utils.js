@@ -31,7 +31,42 @@ function binaryToDecimal(binaryNumber = '00100') {
     }, 0)
 }
 
+function decimalToBinary(num=10, size) {
+  let i = Math.floor(Math.log2(num));
+  let curr = num;
+  let res = Array(i+1).fill(0).map((_, n) => {
+    const on = 2 ** (i - n);
+    // console.log('curr', curr, on, n, i)
+    if (curr - on >= 0) {
+      curr -= on;
+      return 1;
+    }
+    return 0;
+  })
+
+  if (size) {
+    while (res.length < size) {
+      res.unshift(0);
+    }
+  }
+
+  return res.join('')
+}
+
+function hexadecimalToBinary(hex='D2A1') {
+  return hex
+    .split('')
+    .reduce((acc, curr) => {
+      let decimal = +curr;
+      if (isNaN(+curr)) {
+        decimal = curr.charCodeAt(0) - 55
+      }
+      return acc + decimalToBinary(decimal, 4)
+    }, '')
+}
+
 module.exports = {
   readFile,
   binaryToDecimal,
+  hexadecimalToBinary,
 }
