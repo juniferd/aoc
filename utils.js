@@ -53,6 +53,7 @@ function decimalToBinary(num=10, size) {
   return res.join('')
 }
 
+// TODO: rename me - this isn't accurate
 function hexadecimalToBinary(hex='D2A1') {
   return hex
     .split('')
@@ -68,5 +69,6 @@ function hexadecimalToBinary(hex='D2A1') {
 module.exports = {
   readFile,
   binaryToDecimal,
+  decimalToBinary,
   hexadecimalToBinary,
 }
