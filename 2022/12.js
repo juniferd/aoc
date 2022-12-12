@@ -1,6 +1,7 @@
 const { readFile } = require('../utils.js')
 
 function createElevation(lines) {
+  let starts = []
   let start = [0, 0]
   let end = [0, 0]
   const elevs = {}
@@ -10,16 +11,20 @@ function createElevation(lines) {
       if (elev === 'S') {
         start = [i, j]
         elevs[[i, j]] = 0
+        starts.push([i, j])
       } else if (elev === 'E') {
         end = [i, j]
         elevs[[i, j]] = 25
+      } else if (elev === 'a') {
+        starts.push([i, j])
+        elevs[[i, j]] = elev.charCodeAt(0) - 97
       } else {
         elevs[[i, j]] = elev.charCodeAt(0) - 97
       }
     })
   })
 
-  return { elevations: elevs, end, start }
+  return { elevations: elevs, end, start, starts }
 }
 
 function getAdjacentIndices(currPos, elevations) {
@@ -58,17 +63,22 @@ function getMinSteps(currPos, elevations, endPos) {
   Object.keys(elevations).forEach((elev) => {
     dist[elev] = Infinity
     prev[elev] = undefined
-    queue.push(elev)
+    // queue.push(elev);
   })
+  queue.push(currPos.join(','))
 
-  dist[currPos] = 0
+  dist[currPos.join(',')] = 0
 
-  console.log(elevations)
+  // console.log(elevations)
   while (queue.length) {
     // get the u with min dist
     const uIndex = findSmallestDistInQ(queue, dist)
+    if (uIndex === undefined) {
+      break;
+    }
     // console.log('uIndex', uIndex, dist[uIndex])
     if (uIndex === endPos.join(',')) break;
+
     const neighbors = getAdjacentIndices(uIndex, elevations)
     
     neighbors.forEach((neighbor) => {
@@ -76,7 +86,9 @@ function getMinSteps(currPos, elevations, endPos) {
       if (alt < dist[neighbor]) {
         dist[neighbor] = alt
         prev[neighbor] = uIndex
+        queue.push(neighbor.join(','));
       }
+
     })
   }
   // for (let i = 0; i < 5; i++) {
@@ -89,7 +101,7 @@ function getMinSteps(currPos, elevations, endPos) {
   // }
   /// console.log(dist, prev)
 
-  console.log(dist[endPos.join(',')])
+  return dist[endPos.join(',')]
   // const stack = [];
   // let u = endPos.join(',');
   // if (prev[u] || u === '0,0') {
@@ -109,4 +121,21 @@ async function getShortestSteps(file = '../input.txt') {
   getMinSteps(start, elevations, end)
 }
 
-module.exports = getShortestSteps
+async function getAllAShortestSteps(file = '../input.txt') {
+  const lines = await readFile(file)
+  const { elevations, starts, end } = createElevation(lines)
+  
+  let min = Infinity;
+
+  // console.log(elevations, end.join(','))
+  starts.forEach((start, i) => {
+    const steps = getMinSteps(start, elevations, end)
+    console.log(i, steps)
+    if (steps < min) {
+      min = steps
+    }
+  })
+  console.log(min)
+}
+
+module.exports = getAllAShortestSteps
