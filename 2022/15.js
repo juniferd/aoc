@@ -110,53 +110,46 @@ function addNoPossibleBeacon(
   }
 }
 
-function checkBorderPositionInBounds(signalManhattans, x, y) {
-  const manhattans = Object.entries(signalManhattans).map(([key, val]) => ([key, val]))
+function checkBorderPositionInBounds(manhattans, x, y) {
   for (let i = 0; i < manhattans.length; i++) {
-    const [signalX, signalY] = manhattans[i][0].split(',')
-    const distanceFromSignal = getManhattanDistance([signalX, signalY], [x, y])
-    if (distanceFromSignal <= manhattans[i][1]) return false;
+    const [signalX, signalY] = manhattans[i][0]
+    const diffX = Math.abs(signalX - x);
+    const diffY = Math.abs(signalY - y);
+    if (diffX + diffY <= manhattans[i][1]) return false;
   }
   return true;
 }
 
 function addBorders(signalManhattans, sensor, manhattanDistance) {
-  const [sensorX, sensorY] = sensor.split(',')
+  const [sensorX, sensorY] = sensor.split(',').map(Number);
   console.log(sensorX, sensorY, manhattanDistance)
-  for (let y = -manhattanDistance; y <= manhattanDistance; y++) {
+  const manhattans = Object.entries(signalManhattans).map(([key, val]) => ([key.split(','), val]))
 
-    const normalizedY = Number(sensorY) + y;
-    if (normalizedY < 0 ) continue;
+  let startY = -manhattanDistance;
+  startY = Math.max(-sensorY, startY);
+  startY = Math.max(-sensorX, startY);
+
+  for (let y = startY; y <= manhattanDistance; y++) {
+    const normalizedY = sensorY + y;
     if (normalizedY > 4000000) break;
 
     const xPos = manhattanDistance - Math.abs(y);
     const xNeg = -manhattanDistance + Math.abs(y);
 
-    const normalizedXPos = Number(sensorX) + xPos;
-    const normalizedXNeg = Number(sensorX) + xNeg;
-    // if (normalizedXPos < 0 || normalizedXPos > 4000000) continue;
-      // if (Math.abs(x) + Math.abs(y) <= manhattanDistance) {
+    const normalizedXPos = sensorX + xPos;
+    const normalizedXNeg = sensorX + xNeg;
     if (normalizedXPos >= 0 && normalizedXPos <= 4000000) {
       // check against all other sensors
-      const inBoundPos = checkBorderPositionInBounds(signalManhattans, normalizedXPos, normalizedY)
-      if (inBoundPos) return [normalizedXPos, normalizedY]
-        // if (!(keyPos in allSignals)) {
-        //  allSignals[keyPos] = '#'
-        // }
+      if (checkBorderPositionInBounds(manhattans, normalizedXPos, normalizedY))
+        return [normalizedXPos, normalizedY]
     }
-      // }
     if (normalizedXNeg >= 0 && normalizedXNeg <= 4000000) {
-      const inBoundNeg = checkBorderPositionInBounds(signalManhattans, normalizedXNeg, normalizedY)
-      if (inBoundNeg) return [normalizedXNeg, normalizedY]
+      // check against all other sensors
+      if (checkBorderPositionInBounds(manhattans, normalizedXNeg, normalizedY))
+        return [normalizedXNeg, normalizedY]
 
-        // const keyNeg = [normalizedXNeg, normalizedY].join(',')
-        // if (!(keyNeg in allSignals)) {
-        //   allSignals[keyNeg] = '#'
-       //  }
     }
   }
-  // const signalMap = createMap(allSignals)
-  // drawMap(signalMap)
 }
 
 function getKeys(allSignals, yTarget) {
@@ -185,9 +178,10 @@ function getSignalBorders(allSignals, sensors, xRange, yRange) {
   Object.entries(sensors).forEach(([sensor, beacon]) => {
     console.log('sensor', sensor, 'beacon', beacon)
     const manhattanDistance = getManhattanDistance(sensor.split(','), beacon) + 1
+    let start = +new Date();
     const res2 = addBorders(signalManhattans, sensor, manhattanDistance)
-    if (res2) res = res2
-    console.log('>>>', res)
+    let end = +new Date();
+    console.log('>>>', res2, end - start);
   });
 }
 
@@ -236,6 +230,7 @@ async function findPositions(file = '../input.txt') {
 }
 
 async function findBeacon(file = '../input.txt') {
+  let start = +new Date();
   const lines = await readFile(file)
 
   let { sensors, xRange, yRange } = createBeacons(lines)
@@ -251,6 +246,9 @@ async function findBeacon(file = '../input.txt') {
   // drawMap(signalMap)
 
   getSignalBorders(allSignals, sensors, xRange, yRange)
+
+  let end = +new Date();
+  console.log("TOOK", (end - start))
 
   // const signalMap2 = createMap(allSignals)
   // drawMap(signalMap2)
