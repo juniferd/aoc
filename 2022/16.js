@@ -231,32 +231,31 @@ function getMostPressureEB(curr, timeLeft, pathsLeft, opened, cache) {
 
   const rate = VALVES[curr].rate
 
-  const left = Math.max(
-    ...Object.keys(VALVES).map((neighbor) => {
-      if (neighbor == curr || neighbor == 'AA') {
-        return 0
-      }
-      if (isOpened(neighbor, opened)) {
-        return 0
-      }
-      let distance = DISTANCES[curr][neighbor]
-      return getMostPressureEB(
-        neighbor,
-        timeLeft - distance,
-        pathsLeft,
-        opened,
-        cache
-      )
-    })
-  )
-
   let right = 0
+  let left = 0;
   if (!isOpened(curr, opened) && rate > 0) {
     opened = markOpened(curr, opened)
     right =
       getMostPressureEB(curr, timeLeft - 1, pathsLeft, opened, cache) +
       (timeLeft - 1) * rate
     opened = unmarkOpened(curr, opened)
+  } else {
+    left = Math.max(
+      ...Object.keys(VALVES).map((neighbor) => {
+        if (neighbor == curr || neighbor == 'AA') {
+          return 0
+        }
+        let distance = DISTANCES[curr][neighbor]
+        return getMostPressureEB(
+          neighbor,
+          timeLeft - distance,
+          pathsLeft,
+          opened,
+          cache
+        )
+      })
+    )
+
   }
 
   const res = Math.max(left, right)
