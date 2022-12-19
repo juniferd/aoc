@@ -1,0 +1,137 @@
+const { readFile } = require('../utils.js')
+
+const TIME = 24
+
+function createBlueprints(lines) {
+  const blueprints = {}
+
+  lines.forEach((line) => {
+    let [id, rest] = line.split(':')
+    id = id.slice(10)
+
+    const costs = rest.split('. ').map((l) => {
+      const robot = l.split('robot')[0].slice(5).trim()
+      const regexp = /\d+ (ore|clay|obsidian)/g
+      const currCosts = l.match(regexp).reduce((acc, c) => {
+        const [currCost, currType] = c.split(' ')
+        return { ...acc, [currType]: Number(currCost) }
+      }, {})
+      return [
+        currCosts.ore ?? 0,
+        currCosts.clay ?? 0,
+        currCosts.obsidian ?? 0,
+        currCosts.geode ?? 0,
+      ]
+    })
+    blueprints[id] = costs
+  })
+
+  return blueprints
+}
+
+function canCreateRobot(costs, ores) {
+  for (let i = 0; i < costs.length; i++) {
+    if (costs[i] > ores[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+function subtractOres(costs, ores) {
+  for (let i = 0; i < costs.length; i++) {
+    ores[i] -= costs[i]
+  }
+}
+
+function addOres(costs, ores) {
+  for (let i = 0; i < costs.length; i++) {
+    ores[i] += costs[i]
+  }
+}
+
+function runGeodeCollector(currRobots, timeLeft, oreCounts, robotCosts) {
+  for (let i = 0; i < timeLeft; i++) {
+    console.log("BEGIN TURN", timeLeft, currRobots, oreCounts)
+    for (let j = 3; j >= 1; j--) {
+      if (canCreateRobot(robotCosts[j], oreCounts)) {
+        currRobots[j]++;
+        subtractOres(robotCosts[j], oreCounts);
+      }
+    }
+    addOres(currRobots, oreCounts);
+    console.log("END TURN", timeLeft, currRobots, oreCounts)
+  }
+}
+
+function getMaxGeodes(currRobots, timeLeft, oreCounts, robotCosts, cache) {
+  const key = `${timeLeft}-${currRobots}-${oreCounts}`;
+  
+  // console.log(key, currRobots, oreCounts)
+  if (timeLeft <= 0) {
+    return oreCounts[3]
+  }
+  
+  if (key in cache) return cache[key]
+
+
+  let right;
+  // if any of the robot cotCosts can be fulfilled t
+  // harvest
+
+  const leftCosts = robotCosts.map((costs, i) => {
+    let left = 0;
+
+    if (canCreateRobot(costs, oreCounts)) {
+      // create robot
+      subtractOres(costs, oreCounts)
+
+      // quick hack so that we exit early if we have enough to have created 2 robots this turn
+      // meaning we weren't greedy enough
+      if (canCreateRobot(costs, oreCounts)) {
+        addOres(costs, oreCounts)
+        return 0;
+      }
+
+      addOres(currRobots, oreCounts)
+      currRobots[i] += 1
+      left = getMaxGeodes(currRobots, timeLeft - 1, oreCounts, robotCosts, cache)
+      addOres(costs, oreCounts)
+      currRobots[i] -= 1
+      subtractOres(currRobots, oreCounts)
+    }
+
+    return left;
+  })
+
+  addOres(currRobots, oreCounts)
+  right = getMaxGeodes(currRobots, timeLeft - 1, oreCounts, robotCosts, cache)
+  subtractOres(currRobots, oreCounts)
+
+  const res = Math.max(right, ...leftCosts);
+  cache[key] = res;
+
+  return res;
+}
+
+async function getQualityLevel(file = '../input.txt') {
+  const lines = await readFile(file)
+  const blueprints = createBlueprints(lines)
+
+  let maxQuality = 0
+  let maxID
+  Object.entries(blueprints).forEach(([blueprintID, robots]) => {
+    const cache = {}
+    // currRobots is an array [ore, clay, obsidian, geode]
+    const start = +new Date();
+    const maxGeodes = getMaxGeodes(
+      [1, 0, 0, 0],
+      TIME,
+      [0, 0, 0, 0],
+      robots,
+      cache
+    )
+    console.log(maxGeodes, "took", +new Date() - start)
+  })
+}
+
+module.exports = getQualityLevel

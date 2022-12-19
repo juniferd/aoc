@@ -107,13 +107,13 @@ function inBounds(curr, xMax, yMax, zMax) {
   )
 }
 function floodFill(xRange, yRange, zRange, cubeDict) {
-  const queue = [[0, 0, 0]]
+  const stack = [[0, 0, 0]]
 
   const seen = {}
   let surfaceCount = 0
 
-  while (queue.length) {
-    const curr = queue.pop()
+  while (stack.length) {
+    const curr = stack.pop()
     if (!inBounds(curr, xRange[1], yRange[1], zRange[1])) continue
     if (curr in cubeDict) {
       surfaceCount += 1
@@ -126,12 +126,12 @@ function floodFill(xRange, yRange, zRange, cubeDict) {
     // 6 different sides
 
     const [x, y, z] = curr
-    queue.push([x - 1, y, z])
-    queue.push([x, y - 1, z])
-    queue.push([x, y, z - 1])
-    queue.push([x + 1, y, z])
-    queue.push([x, y + 1, z])
-    queue.push([x, y, z + 1])
+    stack.push([x - 1, y, z])
+    stack.push([x, y - 1, z])
+    stack.push([x, y, z - 1])
+    stack.push([x + 1, y, z])
+    stack.push([x, y + 1, z])
+    stack.push([x, y, z + 1])
   }
   return { surfaceCount }
 }
