@@ -15,26 +15,24 @@ function isUnique(numbers) {
 
 function moveNumber(index, numbers, maxLength) {
   const [num] = numbers[index]
-  let numWraps = Math.floor(Math.abs((num + index) / maxLength))
-  let newIndex = (num + index) % maxLength
+  let newIndex = num + index;
 
-  if (numWraps > 0 && num < 0) {
-    newIndex -= numWraps
-  }
-  if (numWraps > 0 && num > 0) {
-    newIndex += numWraps
+  while (newIndex >= maxLength || newIndex <= -maxLength) {
+    let numWraps = Math.floor(Math.abs(newIndex) / maxLength)
+    newIndex = newIndex % maxLength
+    if (numWraps > 0 && num < 0) {
+      newIndex -= numWraps
+    }
+    if (numWraps > 0 && num > 0) {
+      newIndex += numWraps
+    }
   }
 
-  let k = 0
-  while (newIndex >= maxLength) {
-    // console.log('wrap to front')
+  if (newIndex >= maxLength) {
     newIndex = newIndex - maxLength + 1
-    k += 1
   }
-  while (newIndex <= 0) {
-    // console.log('wrap to back')
+  if (newIndex <= 0) {
     newIndex = newIndex + maxLength - 1
-    k += 1
   }
 
 
