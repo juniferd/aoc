@@ -58,4 +58,27 @@ function solve(s1, p1, s2, p2, turn, cache={}) {
   return ret
 }
 
-console.log(solve(4, 0, 8, 0, true))
+
+function solve2(s1, p1, s2, p2, cache={}) {
+  if (p2 <= 0) { return [0, 1] }
+
+  let ck = `${s1},${p1}:${s2},${p2}`
+  if (ck in cache) { return cache[ck]; }
+
+  let ret = [0, 0]
+  for (let k in WAYS) {
+    let s = (s1 + Number(k))
+    if (s > 10) { s -= 10 }
+
+    let [r2, r1] = solve2(s2, p2, s, p1 - s, cache)
+    ret[0] += r1 * WAYS[k]
+    ret[1] += r2 * WAYS[k]
+  }
+
+  cache[ck] = ret
+
+  return ret;
+
+}
+
+console.log(solve2(3, 21, 4, 21))
