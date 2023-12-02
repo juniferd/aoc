@@ -11,7 +11,7 @@ if (require.main === module) {
 
   content += "\n"
   content += "\n"
-  content += "async function foo(file='../input.txt') {"
+  content += "async function getAnswer(file='../input.txt') {"
   content += "\n"
   content += "  const lines = await readFile(file);"
   content += "\n"
@@ -20,7 +20,7 @@ if (require.main === module) {
   content += "}"
   content += "\n"
   content += "\n"
-  content += "module.exports = foo;"
+  content += "module.exports = getAnswer;"
 
   try {
     fs.writeFileSync(f ?? file, content)
