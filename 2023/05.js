@@ -33,7 +33,7 @@ async function getAnswer(file = '../input.txt') {
       minLocation = res
     }
   })
-  console.log('res', minLocation)
+  console.log('minLocation', minLocation)
   // SEEDS.forEach(seed => {
   //   let source = seed;
   //   mapsOrder.forEach((mapName) => {
@@ -48,31 +48,28 @@ async function getAnswer(file = '../input.txt') {
   // console.log(minLocation)
 }
 
-function getDestinationRange(
-  [sourceMin, sourceMax],
-  mapNameIndex,
-) {
+function getDestinationRange([sourceMin, sourceMax], mapNameIndex) {
   const mapName = mapsOrder[mapNameIndex]
   // console.log('testing', sourceMin, sourceMax, mapName, memoKey)
   if (!mapName) console.log(sourceMin)
-  if (!mapName) return sourceMin;
+  if (!mapName) return sourceMin
 
   const memoKey = `${sourceMin}-${sourceMax}-${mapNameIndex}`
   if (memoKey in MEMO) return MEMO[memoKey]
 
   const sourceSegments = getSourceSegments([sourceMin, sourceMax], mapName)
   console.log('SOURCE SEGMENTS', sourceSegments)
-  const destSegments = sourceSegments.map(([segMin, segMax]) => ([getLocation(segMin, mapName), getLocation(segMax, mapName)]))
+  const destSegments = sourceSegments.map(([segMin, segMax]) => [
+    getLocation(segMin, mapName),
+    getLocation(segMax, mapName),
+  ])
 
   console.log('DEST SEGMENTS', destSegments)
   // console.log(sourceRanges)
 
   const res = Math.min(
     ...destSegments.map((source) =>
-      getDestinationRange(
-        source,
-        mapNameIndex + 1,
-      )
+      getDestinationRange(source, mapNameIndex + 1)
     )
   )
   MEMO[memoKey] = res
@@ -83,7 +80,7 @@ function getDestinationRange(
 function getSourceSegments([sourceMin, sourceMax], mapName) {
   const currMap = MAP[mapName]
   const rangeKeys = Object.keys(currMap)
-  const points = [];
+  const points = []
 
   rangeKeys.forEach((rangeKey) => {
     const [keyMin, keyMax] = rangeKey.split('-')
@@ -95,70 +92,28 @@ function getSourceSegments([sourceMin, sourceMax], mapName) {
     if (kMax > sourceMin && kMax < sourceMax) {
       points.push(kMax)
     }
-  });
+  })
 
   points.sort((a, b) => a - b)
   if (points.length > 0) {
-    const sources = [];
-    let last = sourceMin;
+    const sources = []
+    let last = sourceMin
     points.forEach((pt) => {
-      sources.push([last+1, pt]);
-      last = pt;
-    });
-    sources.push([last+1, sourceMax])
-    return sources;
+      sources.push([last + 1, pt])
+      last = pt
+    })
+    sources.push([last + 1, sourceMax])
+    return sources
   } else {
     return [[sourceMin, sourceMax]]
   }
-
-}
-
-function getSourceRanges([sourceMin, sourceMax], mapName) {
-  const currMap = MAP[mapName]
-  const rangeKeys = Object.keys(currMap)
-  // const sources = {}
-
-  const points = [sourceMin, sourceMax];
-
-  rangeKeys.forEach((rangeKey) => {
-    const [keyMin, keyMax] = rangeKey.split('-')
-    const kMin = Number(keyMin)
-    const kMax = Number(keyMax)
-    if (kMin > sourceMin && kMin < sourceMax) {
-      points.push(kMin)
-    }
-    if (kMax > sourceMin && kMax < sourceMax) {
-      points.push(kMax)
-    }
-    // console.log('mapName', mapName, 'kMin', kMin, 'kMax', kMax, 'sourceMin', sourceMin, 'sourceMax', sourceMax)
-    //   const b = [getLocation(sourceMin, mapName), getLocation(kMax, mapName)]
-  });
-
-  points.sort((a, b) => a - b)
-  // console.log(points)
-  // console.log(sourceMin)
-  if (points.length > 0) {
-    const sources = [];
-    let last = sourceMin;
-    points.forEach((pt) => {
-      sources.push([getLocation(last, mapName), getLocation(pt, mapName)]);
-      last = pt;
-    });
-    sources.push([getLocation(last, mapName), getLocation(sourceMax, mapName)])
-    return sources;
-  } else {
-    return [[getLocation(sourceMin, mapName), getLocation(sourceMax, mapName)]]
-  }
-
-  // return Object.values(sources)
-  //.map(source => getLocation(source, mapName))
 }
 
 function getLocation(source, mapName) {
   source = Number(source)
   const currMap = MAP[mapName]
   console.log('currMap', currMap)
-  console.log("Mapping", source, "To dest")
+  console.log('Mapping', source, 'To dest')
   const rangeKeys = Object.keys(currMap)
   for (let i = 0; i < rangeKeys.length; i++) {
     const sourceKey = rangeKeys[i]
@@ -168,7 +123,7 @@ function getLocation(source, mapName) {
     if (source >= sMin && source <= sMax) {
       // get the diff
       const diff = source - sMin
-      console.log("Mapped to", currMap[sourceKey][0] + diff, currMap[sourceKey])
+      console.log('Mapped to', currMap[sourceKey][0] + diff, currMap[sourceKey])
       return currMap[sourceKey][0] + diff
     }
   }
