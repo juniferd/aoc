@@ -2,8 +2,6 @@ const { readFile } = require('../utils.js')
 
 const HANDS = {};
 
-const TREE = {};
-
 const CARDS = {
   A:14,
   K:13,
@@ -21,9 +19,6 @@ const CARDS = {
 }
 const CARDS_2 = {...CARDS, J:1}
 
-// {
-// id: a, left: {id: a, left: {}, right: {}}, right: []}
-// }
 async function getAnswer(file='../input.txt') {
   const lines = await readFile(file);
   assembleHands(lines)
@@ -63,28 +58,6 @@ async function getAnswer(file='../input.txt') {
   })
   console.log('res', res)
 }
-
-// function createTree() {
-//   Object.entries(HANDS).forEach(([hand, bid]) => {
-//     if (!TREE.hand) {
-//       TREE.hand = hand;
-//       TREE.bid = bid;
-//       TREE.left = {};
-//       TREE.right = {};
-//     } else {
-//       const node = traverse(TREE, hand)
-//       // insertNode(hand, bid)
-//     }
-//   })
-// }
-// 
-// function insertNode(hand, bid, prevNode) {
-// }
-// 
-// function traverse(currNode, hand) {
-//   // compare hand with currNode.hand    
-// 
-// }
 
 function getType(hand, jokers = false) {
   const cards = hand.split('');
