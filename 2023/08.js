@@ -69,6 +69,7 @@ function countGhostSteps() {
     }
   }
 
+  // TODO: actually write out the function to find LCM
   // LCM: 43, 53, 59, 61, 71
   // LCM: 42, 52, 58, 60, 70
 
