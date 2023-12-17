@@ -61,7 +61,7 @@ function findMinimumHeatLossPath() {
     }
     // if (queue.length> 4) break;
     if (key in visited) continue;
-    visited[key] = curr.straightCount;
+    visited[key] = true;
     // console.log('CURR', curr, MAP[currPos], queue.length)
     const nexts = getNext(curr)
     nexts.forEach(next => {
@@ -69,6 +69,7 @@ function findMinimumHeatLossPath() {
     })
   }
 
+  /*
   function drawPath(path) {
     const nodes = path.split('->').map((nodeStr) => {
       const [posStr, totHLStr] = nodeStr.trim().split(' ')
@@ -85,6 +86,7 @@ function findMinimumHeatLossPath() {
       console.log(row.join(''))
     }
   }
+  */
 
 
   function getNext({row, col, dir, straightCount, path, heatLoss}) {
@@ -116,6 +118,35 @@ function findMinimumHeatLossPath() {
   }
 }
 
+// returns next position
+function move(pos, dir) {
+  const newPos = DIRS[dir].map((coord, index) => coord + pos[index])
+  return newPos
+}
+
+function inBounds(row, col) {
+  return row >= 0 && row < ROW_MAX && col >= 0 && col < COL_MAX
+}
+
+function buildMap(lines) {
+  lines.forEach((line, row) => {
+    if (row > ROW_MAX) {
+      ROW_MAX = row
+    }
+    line.split('').forEach((hl, col) => {
+      const pos = [row, col]
+      const heatLoss = Number(hl)
+      MAP[pos] = heatLoss
+      if (col > COL_MAX) {
+        COL_MAX = col
+      }
+    })
+  })
+  ROW_MAX += 1
+  COL_MAX += 1
+}
+
+/*
 function nvmignorethisone() {
   const START = [0, 0]
   const END = [ROW_MAX - 1, COL_MAX - 1]
@@ -198,33 +229,7 @@ function nvmignorethisone() {
     return res
   }
 }
+*/
 
-// returns next position
-function move(pos, dir) {
-  const newPos = DIRS[dir].map((coord, index) => coord + pos[index])
-  return newPos
-}
-
-function inBounds(row, col) {
-  return row >= 0 && row < ROW_MAX && col >= 0 && col < COL_MAX
-}
-
-function buildMap(lines) {
-  lines.forEach((line, row) => {
-    if (row > ROW_MAX) {
-      ROW_MAX = row
-    }
-    line.split('').forEach((hl, col) => {
-      const pos = [row, col]
-      const heatLoss = Number(hl)
-      MAP[pos] = heatLoss
-      if (col > COL_MAX) {
-        COL_MAX = col
-      }
-    })
-  })
-  ROW_MAX += 1
-  COL_MAX += 1
-}
 
 module.exports = getAnswer
