@@ -1,6 +1,11 @@
 const fs = require('fs')
 const readline = require('readline')
 
+async function writeFile(outputFile = './output.txt', data = '') {
+  fs.writeFileSync(outputFile, data)
+  console.log('successful')
+}
+
 async function readFile(
   inputFile = './input.txt',
   coerceType = String,
@@ -68,6 +73,7 @@ function hexadecimalToBinary(hex='D2A1') {
 
 module.exports = {
   readFile,
+  writeFile,
   binaryToDecimal,
   decimalToBinary,
   hexadecimalToBinary,

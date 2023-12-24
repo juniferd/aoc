@@ -56,6 +56,7 @@ function createGraph(branches) {
   const q = [{ node: [0, 1], id: ++ID }]
 
   const neighbors = {}
+
   function addNeighbor(a, b) {
     if (!neighbors[a]) {
       neighbors[a] = []
@@ -65,6 +66,7 @@ function createGraph(branches) {
     }
   }
 
+  // TODO: wtf
   for (let i = 0; i < q.length; i++) {
     cur = q[i]
     if (cur.node in visited) {
