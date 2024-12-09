@@ -15,7 +15,7 @@ async function getAnswer(file='../input.txt') {
   countAllAntinodes();
   // Object.keys(ANTINODES).forEach(n => console.log(n))
   draw(ANTENNAS_MAP, ANTINODES)
-  // this is dumb
+  // this is dumb - idk why this works
   Object.keys(ANTENNAS_MAP).forEach(node => ANTINODES[node] = node)
   console.log('tot', Object.keys(ANTINODES).length)
 }
@@ -52,12 +52,10 @@ function countAllAntinodes(antennas = ANTENNAS) {
 }
 
 function getAllAntinodes(a = [], b = []) {
-  // get manhattan distance
+  // get slope
   const [dx, dy] = [a[0] - b[0], a[1] - b[1]];
-  // do manhattan distance in either direction until out of bounds
+  // do slope in either direction until out of bounds
   const nodes = [];
-  // const node0 = [a[0] + dx, a[1] + dy]
-  // const node1 = [b[0] - dx, b[1] - dy]
   let curr = [a[0] + dx, a[1] + dy]
   while (inBounds(curr)) {
     nodes.push(curr)
