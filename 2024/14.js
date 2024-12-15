@@ -13,18 +13,18 @@ async function getAnswer(file='../input.txt') {
   // doPartOne()
   // 313,414 - vertically (101 diff) + 10 offset
   // 379,482 - horizontally (103 diff) + 70 offset
-  // 101 * n + 10, 103 * n + 70
-  let start = 70
-  let end = 20000
-  let step = 103
+  let start = 7383 - (10*100)
+  let end = 7383 + 10
+  // let step = 103
+  let step = 10
   let interval = setInterval(() => {
     doPartTwo(start)
     start += step;
     if (start === end) {
       clearInterval(interval)
-      console.log('stop')
+      console.log('---')
     }
-  }, 1000)
+  }, 10)
 }
 
 function doPartTwo(i=100) {
