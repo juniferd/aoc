@@ -35,15 +35,28 @@ async function getAnswer(file='../input.txt') {
   const turns = Math.floor(points / 1000)
   const steps = points - (turns * 1000);
   console.log('STEPS:', steps, 'TURNS:', turns, 'POINTS:', points)
-  // doPartTwo(steps, turns)
-  doPartTwo(points, path);
+  console.log(path.length)
+  draw(path.join('-'))
+  // const newSquares = {}
+  // path.forEach(sq => {
+  //   if (NEIGHBORS[sq].length > 2) {
+  //     NEIGHBORS[sq].forEach(s => newSquares[s] = s)
+  //   }
+  //   newSquares[sq] = sq
+  // })
+  // doPartTwo(points, Object.values(newSquares));
+  doPartTwo(points)
 }
 
-function doPartTwo(origPoints=0, origPath=[]) {
+function doPartTwo(origPoints=0, squares= Object.values(SQUARES)) {
   const all = {}
-  Object.values(SQUARES).forEach((square,i) => {
+  const checked = {}
+  squares.forEach((square,i) => {
     console.log('i', i, i / Object.keys(SQUARES).length)
+    checked[square] = true;
+    if (square in all) return;
     const neighbors = NEIGHBORS[square];
+    if (neighbors.length === 2 && ((neighbors[0] in checked && NEIGHBORS[neighbors[0]].length === 2) || (neighbors[1] in checked && NEIGHBORS[neighbors[1]].length === 2))) return;
     neighbors.forEach(neighbor => {
       if (square in all) return;
       const [pointsFromStart, pathFromStart] = doPartOne(START, neighbor, [1,0], origPoints)
