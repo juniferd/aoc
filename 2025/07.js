@@ -12,27 +12,27 @@ async function getAnswer(file='../input.txt') {
 
 function runTachyon2(start, MAP, xSize, ySize) {
   const cache = {}
-  const paths = traverse(start, `${start}`,MAP, xSize, ySize, cache)
-  console.log(paths)
+  const tot = traverse(start, MAP, xSize, ySize, cache)
+  console.log(tot)
 }
-function traverse(curr, path, MAP, xSize, ySize, cache) {
-  if (path in cache) return cache[path]
+function traverse(curr, MAP, xSize, ySize, cache) {
+  if (curr in cache) return cache[curr]
   if (!isValid(curr[0], curr[1], xSize, ySize)) {
-    console.log('curr', curr, path)
+    console.log('curr', curr)
     return 1;
   }
   const nexts = getNext(curr, MAP, xSize, ySize)
   if (nexts === null) {
-    console.log('curr', curr, path)
+    console.log('curr', curr)
     return 1
   }
-  const left = traverse(nexts[0], `${curr}-${nexts[0]}`, MAP, xSize, ySize, cache)
+  const left = traverse(nexts[0], MAP, xSize, ySize, cache)
   let right = 0;
   if (nexts.length > 1) {
-    right = traverse(nexts[1], `${curr}-${nexts[1]}`, MAP, xSize, ySize, cache)
+    right = traverse(nexts[1], MAP, xSize, ySize, cache)
   }
   const tot = left + right;
-  cache[path] = tot;
+  cache[curr] = tot;
   return tot;
 }
 
